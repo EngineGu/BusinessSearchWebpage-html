@@ -1,0 +1,337 @@
+@import url("https://fonts.googleapis.com/css?family=Lato&display=swap");
+/* Business Search Request */
+#page1Body{
+    font-family:"lato";
+    text-align: left;
+    background-color: #e6e6e6;
+    font-size: 20px;
+}
+
+#searchArea{
+    border: 5px solid #d3d3d3;
+    width: 800px; 
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    background-color: #ffffff;
+    margin:auto
+}
+
+#siteHeader{
+    width: 800px; 
+    height: 160px;
+    background-image: url("banner.jpeg");
+    background-position: 0-275px; 
+    background-size: cover;
+}
+
+#siteHeader p{
+    color: #ffffff;
+    margin-left: 52px;
+}
+
+#headerText1 {
+    font-size: 30px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+#headerText2 {
+    font-size: 27px;
+    margin-top: 22px;
+}
+
+#queryFormArea {
+    padding-top: 0.1px;
+    margin-top: 0.1px;
+}
+
+#queryForm {
+    margin-left: 52px;
+}
+
+.formText {
+    color: #5271ae;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.requiredTag {
+    color: red;
+}
+
+input[type="text"] {
+    font-size: 20px;
+    padding: 5px 10px;
+    line-height: 20px;
+}
+
+#categoryText {
+    margin-left: 215px;
+}
+
+#categorySelect {
+    margin-left: 130px;
+    font-size: 20px;
+    padding: 5px 10px;
+    line-height: 20px;
+    width: 320px;
+}
+
+hr.horizontalRulerSearch{
+    border-top: 1px solid #5271ae;
+    width: 675px;
+    border-bottom: none;
+}
+
+#autoDetectText{
+    margin-right: 0px;
+    padding-right: 0px;
+}
+
+#autoDetectCheckbox{
+    margin-left: 0px;
+    padding-left: 0px;
+    width: 18px;
+    height: 18px;
+}
+
+input.mybutton {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #4f6fad;
+    border: none;
+    color: white;
+    padding: 10px 24px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 20px;
+    font-weight: lighter;
+}
+
+#submitButton{
+    background-color: #44639f;
+    box-shadow: 0px 5px #384d78;
+}
+
+#submitButton:hover{
+    background-color: #5470ad;
+}
+
+#clearButton{
+    background-color: #ffb706;
+    box-shadow: 0px 5px #fc8500;
+}
+
+#clearButton:hover{
+    background-color: #dd9a00;
+}
+
+#validate_button{
+    visibility: hidden;
+}
+
+/* Business Search Result */
+.errMsg{
+    text-align:center;
+}
+
+#tableAreaContainer{
+    margin-top: 90px;
+}
+#tableArea{
+    width: 870px;
+    margin:auto;
+    background-color: #ffffff;
+}
+
+.businessTable {
+    font-size: 18px;
+    border-collapse: collapse;
+}
+
+th {
+    font-family: lato;
+    color: rgb(0, 0, 0);
+    background-color: #4f6fad;
+    height: 30px;
+    text-align:center;
+    vertical-align: middle;
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    border-right: 2px solid #859ff1;
+}
+
+#lastTableHeader{
+    border-right: none;
+}
+
+.tableHeader1 {
+    width: 50px;
+}
+
+.tableHeader2 {
+    width: 100px;
+}
+
+.tableHeader3 {
+    width: 400px;
+    cursor: pointer;
+}
+
+.tableHeader4 {
+    width: 150px;
+    cursor: pointer;
+}
+
+.tableHeader5 {
+    border-right: none;
+    width: 150px;
+    cursor: pointer;
+}
+
+td {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    height: 85px;
+    text-align:center;
+    vertical-align: middle;
+    border: 2px solid #e6e6e6;
+}
+
+.tableColumn1 {
+    width: 50px;
+}
+
+.tableColumn2 {
+    width: 80px;
+    margin: auto;
+    margin-top: 2px;
+}
+
+.tableColumn3 {
+    width: 400px;
+}
+
+button.linkButton { 
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background:none;
+    border:none;
+    font-size: 18px;
+    cursor:pointer
+}
+
+button.linkButton:hover{
+    color: #d3d3d3
+}
+
+.tableColumn4 {
+    width: 150px;
+}
+
+.tableColumn5 {
+    width: 150px;
+}
+
+/* Business Detail Result */
+#detailAreaContainer{
+    margin-top: 90px;
+}
+#detailArea{
+    background-color: #ffffff;
+    width:670px;
+    margin: auto;
+}
+
+#detailNameArea{
+    width:670px;
+}
+
+#detailNameText{
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+hr.horizontalRulerDetail{
+    border-top: 2px solid #e6e6e6;
+    border-bottom: none;
+    width: 650px;
+    margin: auto;
+}
+
+#detailInfoArea{
+    width: 665px;
+    margin-top: 15px;
+    margin-left: 10px;
+}
+
+.detailInfoSubArea{
+    width: 330px;
+    height:auto;
+    display:inline-block;
+    vertical-align: top
+}
+
+.detailInfoHeaderText{
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 1px;
+}
+
+.detailInfoContentText{
+    font-size: 12px;
+    margin-top: 1px;
+}
+
+#detailStatusOpen{
+    border: none;
+    background-color: #008002;
+    color:black;
+    border-radius: 8px;
+    height:30px
+}
+
+#detailStatusClosed{
+    border: none;
+    color:black;
+    background-color: #ff0000;
+    border-radius: 8px;
+    height:30px
+}
+
+#detailImgArea{
+    width: 670px;
+    height: 320px;
+    margin-left: 10px;
+    margin-top: 30px;
+}
+
+.detailImgSubarea{ 
+    width: 200px;
+    height: 300px;
+    display:inline-block;
+    vertical-align: top;
+    margin-right:10px;
+    border: 1.5px solid #d3d3d3;
+}
+
+.detailImgSubarea:hover{
+    border: 1.5px solid #827f78;
+}
+
+.imgContainer{
+    height: 280px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.detailImg{
+    object-fit: cover;
+    max-height:275px;
+    border: 1px solid #d3d3d3;
+}
+
+.detailPhotoString{
+    text-align: center;
+    font-size: 12px;
+}

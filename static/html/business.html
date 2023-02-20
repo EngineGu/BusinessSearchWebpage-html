@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+
+<HTML>
+    <HEAD>
+        <TITLE>Business Search</TITLE>
+        <link href="./static/css/hw6.css" rel="stylesheet">
+        <SCRIPT LANGUAGE=JavaScript>
+            function clickCheckBox(form) {
+                if (form.in_isAutoDetectEnable.checked){
+                        document.getElementById("input_location_text").value=""
+                    document.getElementById("input_location_text").disabled = "disabled"
+                }
+                else {
+                    document.getElementById("input_location_text").disabled = ""
+                }
+            }
+
+            // get lat and lng by location using Google Map API
+            async function getLatLngByLocation(location) {
+                return new Promise((resolve,reject) =>{
+                setTimeout(()=>{
+                    // generate url
+                    address = String(location).replace("\b", "+")
+                    MY_GOOGLE_MAP_API_KEY = ""
+                    url = "https://maps.googleapis.com/maps/api/geocode/json?address=" + address
+                        + "&key=" + String(MY_GOOGLE_MAP_API_KEY)
+                    // send request and process the response data
+                    if(window.XMLHttpRequest){
+                        xmlHttp =  new XMLHttpRequest()
+                    } 
+                    else {
+                        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP")
+                    }
+                    xmlHttp.responseType = 'text';
+                    xmlHttp.onload = () => {
+                        if (xmlHttp.readyState === xmlHttp.DONE) {
+                            if (xmlHttp.status === 200) {
+                                // get the lat and lgt of the address
+                                var responseJson = JSON.parse(xmlHttp.responseText);
+                                if(responseJson.results.length>0){
+                                    latitude = responseJson.results[0].geometry.location.lat
+                                    longitude = responseJson.results[0].geometry.location.lng
+                                    geoInfo = {"latitude":latitude,"longitude":longitude}
+                                    resolve(geoInfo)
+                                }else{
+                                    resolve("")
+                                }
+
+                            }
+                        }
+                    }
+                    xmlHttp.open("GET",url,true)
+                    xmlHttp.send()
+                },1000)
+                })
+            }
+
+            // get lat and lng by location using IP Infos API
+            async function getLatLngByIP() {
+                return new Promise((resolve,reject) =>{
+                setTimeout(()=>{
+                    // generate url
+                    MY_IPINFO_API_TOKEN = ""
+                    url = "https://ipinfo.io/?token=" + MY_IPINFO_API_TOKEN
+                    // send request and process the response data
+                    if(window.XMLHttpRequest){
+                        xmlHttp =  new XMLHttpRequest()
+                    } 
+                    else {
+                        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP")
+                    }
+                    xmlHttp.responseType = 'text';
+                    xmlHttp.onload = () => {
+                        if (xmlHttp.readyState === xmlHttp.DONE) {
+                            if (xmlHttp.status === 200) {
+                                // get the lat and lgt of the address
+                                var responseJson = JSON.parse(xmlHttp.responseText);
+                                latitude = String(responseJson.loc).split(",")[0]
+                                longitude = String(responseJson.loc).split(",")[1]
+                                geoInfo = {"latitude":latitude,"longitude":longitude}
+                                resolve(geoInfo)
+                            }
+                        }
+                    }
+                    xmlHttp.open("GET",url,true)
+                    xmlHttp.send()
+                },1000)
+                })
+            }
+
+            async function getBusinessBySearch(keyword,latitude,longitude,distance,category) {
+                return new Promise((resolve,reject) =>{
+                setTimeout(()=>{
+                    if (category == "Default")
+                        category = "All"
+                    if (category == "Art & Entertainment")
+                        category = "arts"
+                    if (category == "Health & Medical")
+                        category = "health"
+                    if (category == "Hotels & Travel")
+                        category = "hotelstravel"
+                    if (category == "Food")
+                        category = "food"
+                    if (category == "Professional Services")
+                        category = "professional"
+                    web2 = "https://yanjungu-usc-571-project.nn.r.appspot.com"
+                    url = web2 + "/businesses/search?keyword="+ String(keyword)
+                        + "&latitude=" + String(latitude) + "&longitude=" + String(longitude)
+                        + "&distance=" + String(distance) + "&category=" + String(category)
+                    if(window.XMLHttpRequest){
+                        xmlHttp =  new XMLHttpRequest()
+                    } 
+                    else {
+                        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP")
+                    }
+                    xmlHttp.responseType = 'text';
+                    xmlHttp.onload = () => {
+                        if (xmlHttp.readyState === xmlHttp.DONE) {
+                            if (xmlHttp.status === 200) {
+                            var responseJson = JSON.parse(xmlHttp.responseText);
+                            resolve(responseJson)
+                            }
+                            else
+                            {
+                                resolve("")
+                            }
+                        }
+                    }
+                    xmlHttp.open("GET",url,true)
+                    xmlHttp.send()
+                },1000)
+                })
+            }
+
+            async function getBusinessDetail(business_id) {
+                return new Promise((resolve,reject) =>{
+                setTimeout(()=>{
+                    web2 = "https://yanjungu-usc-571-project.nn.r.appspot.com"
+                    url = web2 + "/businesses/"+ String(business_id)
+                    if(window.XMLHttpRequest){
+                        xmlHttp =  new XMLHttpRequest()
+                    } 
+                    else {
+                        xmlHttp = new ActiveXObject("Microsoft.XMLHTTP")
+                    }
+                    xmlHttp.responseType = 'text';
+                    xmlHttp.onload = () => {
+                        if (xmlHttp.readyState === xmlHttp.DONE) {
+                            if (xmlHttp.status === 200) {
+                            var responseJson = JSON.parse(xmlHttp.responseText);
+                            resolve(responseJson)
+                            }
+                        }
+                    }
+                    xmlHttp.open("GET",url,true)
+                    xmlHttp.send()
+                },1000)
+                })
+            }
+
+            async function showDetialPage(business_id) {
+                responseJson = await getBusinessDetail(business_id)
+                //default value: name"" status"" category"" address"" phoneNumber"" price"" moreInfoLink"" photoLinks[]
+                name = ""
+                if("name" in responseJson && responseJson.name != ""){
+                    name = responseJson.name
+                }
+                status=""
+                console.log(responseJson)
+                if ("hours" in responseJson && "is_open_now" in responseJson.hours[0]){
+                    if(responseJson.hours[0].is_open_now){
+                        status = "Open Now"
+                    }
+                    else{
+                        status = "Closed"
+                    }
+                }
+                category = ""
+                if("categories" in responseJson && responseJson.categories.length>0){
+                    for (i=0;i<responseJson.categories.length;i++){
+                        if(i==0){
+                            category += responseJson.categories[i].title
+                        }
+                        else{
+                            category += " | " + responseJson.categories[i].title
+                        }
+                    }
+                }
+                address = ""
+                if ("location" in responseJson && "display_address" in responseJson.location &&responseJson.location.display_address.length >0){
+                    for (i=0;i<responseJson.location.display_address.length;i++){
+                        if(i==0){
+                            address += responseJson.location.display_address[i]
+                        }
+                        else{
+                            address += " " + responseJson.location.display_address[i]
+                        }
+                    }
+                }
+                phoneNumber = ""
+                if("display_phone" in responseJson && responseJson.display_phone != ""){
+                    phoneNumber = responseJson.display_phone
+                }
+                transactionSupported = ""
+                if("transactions" in responseJson && responseJson.transactions.length > 0){
+                    for(i=0;i<responseJson.transactions.length;i++){
+                        transaction_item = String(responseJson.transactions[i])
+                        transaction_string = transaction_item[0].toUpperCase() + transaction_item.substring(1)
+                        if(i==0){
+                            transactionSupported += transaction_string
+                        }
+                        else{
+                            transactionSupported += " | " + transaction_string
+                        }
+
+                    }
+                }
+                price = ""
+                if("price" in responseJson && responseJson.price!=""){
+                    price = responseJson.price
+                }
+                moreInfoLink = ""
+                if("url" in responseJson && responseJson.url!=""){
+                    moreInfoLink = responseJson.url
+                }
+                photoLinks = []
+                if("photos" in responseJson && responseJson.photos.length>0){
+                        for(i=0;i<responseJson.photos.length;i++){
+                        photoLinks.push(responseJson.photos[i])
+                    }
+                }
+                html_text = "<div id = \"detailNameArea\">"
+                    html_text+="<br>"
+                    html_text+="<p id=\"detailNameText\"><b>"+ String(name)+"</b></p>"
+                html_text += "</div>"                    
+                html_text+="<hr class=\"horizontalRulerDetail\">"
+                html_text+="<div id=\"detailInfoArea\">"
+                    html_text+="<div class=\"detailInfoSubArea\">"
+                        if(status!=""){
+                            html_text+="<div class=\"detailInfoHeaderText\">"
+                            html_text+="<b>Status</b>"
+                            html_text+="</div>"
+                            if (status == "Open Now"){
+                                html_text+="<input type=button id=\"detailStatusOpen\" value=\""
+                            }
+                            else{
+                                html_text+="<input type=button id=\"detailStatusClosed\" value=\""
+                            }
+                                html_text += " " + String(status) + " "
+                            html_text += "\">"
+                        }
+                        if (address!="") {
+                            html_text+="<div class=\"detailInfoHeaderText\">"
+                            html_text+="<b>Address</b>"
+                            html_text+="</div>"
+                            html_text+="<div class=\"detailInfoContentText\">"
+                                html_text+=String(address)
+                            html_text += "</div>"
+                        }
+                        if(transactionSupported!="") {
+                            html_text+="<div class=\"detailInfoHeaderText\">"
+                            html_text+="<b>Transactions Supported</b>"
+                            html_text+="</div>"
+                            html_text+="<div class=\"detailInfoContentText\">"
+                                html_text+=String(transactionSupported)
+                            html_text += "</div>"
+                        }
+                        if(moreInfoLink!=""){
+                            html_text+="<div class=\"detailInfoHeaderText\">"
+                            html_text+="<b>More info</b>"
+                            html_text+="</div>"
+                            html_text+="<div class=\"detailInfoContentText\">"
+                                html_text+="<a target=\"_blank\" href=\"" + String(moreInfoLink) + "\">"
+                                    html_text+="Yelp"
+                                html_text+="</a>"
+                            html_text+="</div>"
+                        }
+                    html_text+="</div>"
+                    html_text+="<div class=\"detailInfoSubArea\">"
+                        if(category!=""){
+                            html_text += "<div class=\"detailInfoHeaderText\">"
+                            html_text+="<b>Category</b>"
+                            html_text+="</div>" 
+                            html_text+= "<div class=\"detailInfoContentText\">"
+                                html_text+= String(category)
+                            html_text+="</div>"
+                        }
+                        if(phoneNumber!=""){
+                            html_text+= "<div class=\"detailInfoHeaderText\">"
+                            html_text+="<b>PhoneBumber</b>"
+                            html_text += "</div>"
+                            html_text+= "<div class=\"detailInfoContentText\">"
+                                html_text+= String(phoneNumber)
+                            html_text+="</div>"
+                        }
+                        if(price!=""){
+                            html_text+= "<div class=\"detailInfoHeaderText\">"
+                            html_text+="<b>Price</b>"
+                            html_text+="</div>"
+                            html_text+= "<div class=\"detailInfoContentText\">"
+                                html_text+= String(price)
+                            html_text+="</div>"
+                        }
+                    html_text+="</div>"
+                html_text+="</div>"
+                html_text+="<div id=\"detailImgArea\">"
+                    html_text+="<div class=\"detailImgSubarea\">"
+                        html_text+="<div class=\"imgContainer\">"
+                            html_text+= "<img class=\"detailImg\" width=\"190px\" src=\"" + String(photoLinks[0])+"\">"
+                        html_text+="</div>"
+                        html_text+="<div class = \"detailPhotoString\">Photo1</div>"
+                    html_text+="</div>"
+                    html_text+="<div class=\"detailImgSubarea\">"
+                        html_text+="<div class=\"imgContainer\">"
+                            html_text+= "<img class=\"detailImg\" width=\"190px\" src=\"" + String(photoLinks[1])+"\">"
+                        html_text+="</div>"
+                        html_text+="<div class = \"detailPhotoString\">Photo2</div>"
+                    html_text+="</div>"
+                    html_text+="<div class=\"detailImgSubarea\">"
+                        html_text+="<div class=\"imgContainer\">"
+                            html_text+= "<img class=\"detailImg\" width=\"190px\"  src=\"" + String(photoLinks[2])+"\">"
+                        html_text+="</div>"
+                        html_text+="<div class = \"detailPhotoString\">Photo3</div>"
+                    html_text+="</div>"
+                html_text+="</div>"
+                document.getElementById("detailArea").innerHTML = html_text
+                document.getElementById('detailArea').scrollIntoView();
+            }
+
+            function generateBusinessesTable(businesses_json, business_seq) {
+                // create table
+                html_text="<table class=\"businessTable\">";
+                html_text+="<tbody >";
+                // create table header
+                html_text+="<tr>";
+                html_text+="<th>"+"<div class=\"tableHeader1\">"+"No."+"</div></th>"
+                html_text+="<th>"+"<div class=\"tableHeader2\">"+"Image"+"</div></th>"
+                html_text+="<th>"+"<div class=\"tableHeader3\" onclick=\"sortByName(businesses_json)\">"+"Business Name"+"</div></th>"
+                html_text+="<th>"+"<div class=\"tableHeader4\" onclick=\"sortByRating(businesses_json)\">"+"Rating"+"</div></th>"
+                html_text+="<th id=\"lastTableHeader\">"+"<div class=\"tableHeader5\" onclick=\"sortByDistance(businesses_json)\">"+"Distance(miles)"+"</div></th>"
+                html_text+="</tr>"
+                // create table rows
+                for (j=0;j<business_seq.length;j++) {
+                    i = business_seq[j]
+                    business_tiem = businesses_json.businesses[i]
+                    number = j+1
+                    imageUrl = business_tiem.image_url
+                    businessName = business_tiem.name
+                    rating = business_tiem.rating
+                    distance = (business_tiem.distance / 1609.34).toFixed(2)
+                    html_text+="<tr>"
+                    html_text+="<td>"+"<div class=\"tableColumn1\">"+String(number)+"</div></td>"
+                    html_text+="<td>"+"<div class=\"tableColumn2\">" + "<img class=\"tableImg\" width=\"79px\" height=\"99px\" alt=\"img " + String(number) + "\" src=\"" + String(imageUrl)+"\">" + "</div></td>"
+                    html_text+="<td>"+"<div class=\"tableColumn3\"> <button class=\"linkButton\" onclick=\"showDetialPage('"+String(business_tiem.id)+"')\">"+String(businessName)+"</button></div></td>"
+                    html_text+="<td>"+"<div class=\"tableColumn4\">"+String(rating)+"</div></td>"
+                    html_text+="<td>"+"<div class=\"tableColumn5\">"+ String(distance)+"</div></td>"
+                    html_text+="</tr>"
+                }
+                html_text+="</tbody>";
+                html_text+="</table>";
+                return html_text;
+                return 0
+            }
+
+            function displayBusinessesTable (html_text){
+                document.getElementById("tableArea").innerHTML = html_text
+                document.getElementById('tableArea').scrollIntoView();
+            }
+
+            sortNameSeq = true
+            sortRatingSeq = true
+            sortDistanceSeq = true
+            function sortByName(businesses_json){
+                nameToIndex={}
+                sortNameList=[]
+                for (i=0;i<businesses_json.businesses.length;i++) {
+                    business_tiem = businesses_json.businesses[i]
+                    name = business_tiem.name + String(i)
+                    nameToIndex[name] = i
+                    sortNameList.push(name)
+                }
+                if (sortNameSeq) {
+                    sortNameList.sort()
+                    sortNameSeq = false
+                }
+                else {
+                    sortNameList.sort()
+                    sortNameList.reverse()
+                    sortNameSeq = true
+                }
+                business_seq=[]
+                for(i=0;i<sortNameList.length;i++){
+                    business_seq.push(nameToIndex[sortNameList[i]])
+                }
+                html_text = generateBusinessesTable(businesses_json,business_seq)
+                displayBusinessesTable(html_text)
+            }
+
+            function sortByRating(businesses_json){
+                rateToIndex={}
+                sortRateList=[]
+                for (i=0;i<businesses_json.businesses.length;i++) {
+                    business_tiem = businesses_json.businesses[i]
+                    rate = business_tiem.rating + 0.001 * i 
+                    rateToIndex[rate] = i
+                    sortRateList.push(rate)
+                }
+                if (sortRatingSeq) {
+                    sortRateList.sort(function(a, b) {return a - b;})
+                    sortRatingSeq = false
+                }
+                else {sortByName
+                    sortRateList.sort(function(a, b) {return a - b;})
+                    sortRateList.reverse()
+                    sortRatingSeq = true
+                }
+                business_seq=[]
+                for(i=0;i<sortRateList.length;i++){
+                    business_seq.push(rateToIndex[sortRateList[i]])
+                }
+                html_text = generateBusinessesTable(businesses_json,business_seq)
+                displayBusinessesTable(html_text)            
+            }
+
+            function sortByDistance(businesses_json){
+                distanceToIndex={}
+                sortDistanceList=[]
+                for (i=0;i<businesses_json.businesses.length;i++) {
+                    business_tiem = businesses_json.businesses[i]
+                    distance = parseFloat(parseFloat(business_tiem.distance).toFixed(3)) + 0.00001*i
+                    distanceToIndex[distance] = i
+                    sortDistanceList.push(distance)
+                }
+                if (sortDistanceSeq) {
+                    sortDistanceList.sort(function(a, b) {return a - b;})
+                    sortDistanceSeq = false
+                }
+                else {
+                    sortDistanceList.sort(function(a, b) {return a - b;})
+                    sortDistanceList.reverse()
+                    sortDistanceSeq = true
+                }
+                business_seq=[]
+                for(i=0;i<sortDistanceList.length;i++){
+                    business_seq.push(distanceToIndex[sortDistanceList[i]])
+                }
+                html_text = generateBusinessesTable(businesses_json,business_seq)
+                displayBusinessesTable(html_text)            
+            }
+
+            async function businessSearch(form) {
+                document.getElementById("tableArea").innerHTML = ""
+                document.getElementById("detailArea").innerHTML = ""
+                    if (form.in_isAutoDetectEnable.checked){
+                        //check required field
+                        if(!document.getElementById("in_keyword_text").checkValidity()){
+                            document.getElementById("in_keyword_text").reportValidity()
+                            return 0 
+                        }
+                        if(!document.getElementById("categorySelect").checkValidity()){
+                            document.getElementById("categorySelect").reportValidity()
+                            return 0 
+                        }
+                        if(!document.getElementById("input_location_text").checkValidity()){
+                            document.getElementById("input_location_text").reportValidity()
+                            return 0 
+                        }
+                        // get latitude and longitude
+                        geoInfo = await getLatLngByIP()
+                        latitude = geoInfo.latitude
+                        longitude = geoInfo.longitude
+                    }
+                    else {
+                        //check required field
+                        if(!document.getElementById("in_keyword_text").checkValidity()){
+                            document.getElementById("in_keyword_text").reportValidity()
+                            return 0 
+                        }
+                        if(!document.getElementById("categorySelect").checkValidity()){
+                            document.getElementById("categorySelect").reportValidity()
+                            return 0 
+                        }
+                        if(!document.getElementById("input_location_text").checkValidity()){
+                            document.getElementById("input_location_text").reportValidity()
+                            return 0 
+                        }
+                        // get latitude and longitude
+                        in_location = form.input_location.value
+                        geoInfo =  await getLatLngByLocation(String(in_location))
+                        if(geoInfo!=""){
+                            latitude = geoInfo.latitude
+                            longitude = geoInfo.longitude
+                        } else{
+                            html_text="<p class=\"errMsg\">No record has been found</p>"
+                            displayBusinessesTable(html_text)
+                            return 0
+                        }
+
+                    }
+                    // get keyword, category and distance
+                    keyword = form.in_keyword.value
+                    category = form.in_category.value
+                    if (form.in_distance.value.length > 0) {
+                        distance = form.in_distance.value
+                    }
+                    else {
+                        distance = 1024
+                    }
+                    html_text=""
+                    businesses_json = await getBusinessBySearch(keyword,latitude,longitude,distance,category)
+                    if(businesses_json!="" && businesses_json.businesses.length>0){
+                        business_seq=[]
+                        for (i=0;i<businesses_json.businesses.length;i++) {
+                            business_seq.push(i)
+                        }
+                        sortNameSeq = true
+                        sortRatingSeq = true
+                        sortDistanceSeq = true
+                        html_text = generateBusinessesTable(businesses_json,business_seq)
+                    }
+                    else {
+                        html_text="<p class=\"errMsg\">No record has been found</p>"
+                    }
+                    displayBusinessesTable(html_text)
+                    return 0
+                }
+            function clearForm() {
+                document.getElementById("queryForm").reset()
+                document.getElementById("input_location_text").disabled = ""
+                document.getElementById("tableArea").innerHTML = ""
+                document.getElementById("detailArea").innerHTML = ""
+            }
+        </SCRIPT>
+    </HEAD>
+    <BODY id="page1Body">
+        <div id = "searchAreaContainer">
+            <div id="searchArea">
+                <div id="siteHeader">
+                    <br>
+                    <p id="headerText1"><b>Business Search</b></p>
+                    <p id="headerText2">Fill out the form to get business near you!</p>
+                </div>
+                <div id="queryFormArea">
+                    <form id = "queryForm" METHOD="GET">
+                        <p>
+                            <div class="formText">Keyword<span class="requiredTag">*</span></div><br>
+                            <input id = "in_keyword_text" name="in_keyword" type="text" size="60" required>
+                        </p>
+                        <p>
+                            <div  class="formText" id="distanceText">Distance(miles) </div>
+                            <div class="formText"  id="categoryText"> Category<span class="requiredTag">*</span></div><br>
+                            <input id = "in_distance_text" name="in_distance" type="text" size="15" placeholder="10">
+                            <select id="categorySelect" name="in_category" required>
+                                <option>Default</option>
+                                <option>Art & Entertainment</option>
+                                <option>Health & Medical</option>
+                                <option>Hotels & Travel</option>
+                                <option>Food</option>
+                                <option>Professional Services</option>
+                            </select>
+                        </p>
+                        <p>
+                            <div  class="formText">Location<span class="requiredTag">*</span></div><br>
+                            <input id = "input_location_text" name="input_location" type="text" size="60" required><br>
+                        </p>
+                        <hr class="horizontalRulerSearch" align="left">
+                        <p>
+                            <div class="formText" id="autoDetectText"><b>Want us to auto-detect your location? Check here</b></div>
+                            <input id="autoDetectCheckbox" type="checkbox" name="in_isAutoDetectEnable" value="yes" onclick="clickCheckBox(this.form)"><br>
+                        </p>
+                        <input class = "mybutton" id="submitButton" type=button value="SUBMIT" onclick="businessSearch(this.form)">
+                        <input class = "mybutton" id="clearButton" type=button value="CLEAR" onclick="clearForm()">
+                    </form>
+                    <p> </p>
+                    <p> </p>
+                    <p> </p>
+                    <p> </p>
+                </div>
+            </div>
+        </div>
+        <p></p>
+        <p></p>        
+        <p></p>
+        <p></p>
+        <div id = "tableAreaContainer">
+            <div id="tableArea" ></div>
+        </div>
+        <p></p>
+        <p></p>        
+        <p></p>
+        <p></p>
+        <div id = "detailAreaContainer">
+            <div id="detailArea" ></div>
+        </div>
+    </BODY>
+</HTML>
